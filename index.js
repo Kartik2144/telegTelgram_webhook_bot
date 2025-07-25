@@ -8,14 +8,14 @@ app.use(bodyParser.json());
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
-app.post('/webhook', async (req, res) => {
-  const message = req.body.message || '⚠️ No message received.';
-  try {
-    await axios.post(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      chat_id: CHAT_ID,
-      text: message,
-      parse_mode: 'Markdown'
-    });
+app.post('/webhook', (req, res) => {
+  const message = req.body.message;
+  if (message && message.text) {
+    console.log("Received message from:", message.chat.id);
+    console.log("Text:", message.text);
+  }
+  res.sendStatus(200);
+});
     res.status(200).send('✅ Message sent to Telegram');
   } catch (error) {
     console.error('Error sending message:', error.message);
@@ -23,7 +23,7 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
+app.get('/webhook', (req, res) => {
   res.send('Telegram Webhook Bot is running');
 });
 
